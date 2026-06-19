@@ -14,6 +14,31 @@ The order matters — earlier sections build the foundation later sections rely 
 
 Legend: ✅ done · 🚧 in progress · ⏳ not started
 
+## The whole curriculum at a glance
+
+```mermaid
+flowchart TB
+    S1[Section 1<br/>Messaging Fundamentals<br/>producer · broker · consumer]:::done
+    S2[Section 2<br/>Transport Fundamentals<br/>TCP · reliable byte stream]:::done
+    S3[Section 3<br/>AMQP Fundamentals<br/>messages on top of bytes]:::done
+    S4[Section 4<br/>AMQP Transport Layer<br/>Connection · Session · Link · Frames]:::done
+    S5[Section 5<br/>AMQP Message Transfer<br/>OPEN → BEGIN → ATTACH → TRANSFER]:::next
+    S6[Section 6<br/>Message Lifecycle<br/>settlement · disposition · flow]:::todo
+    S7[Section 7<br/>Message Structure<br/>header · properties · body]:::todo
+    S8[Section 8<br/>Service Bus Core<br/>Queue · Topic · Subscription · DLQ]:::todo
+    S9[Section 9<br/>SB Message Processing<br/>peek-lock · complete · abandon]:::todo
+    S10[Section 10<br/>SB Advanced<br/>sessions · dedup · scheduled · prefetch]:::todo
+    S11[Section 11<br/>SB Architecture & Ops<br/>scaling · geo-DR · monitoring]:::todo
+
+    S1 --> S2 --> S3 --> S4 --> S5 --> S6 --> S7 --> S8 --> S9 --> S10 --> S11
+
+    classDef done fill:#d6f5e0,stroke:#2f7a4f,color:#0d3320
+    classDef next fill:#fff3d6,stroke:#b07f1f,color:#3a2700
+    classDef todo fill:#f0f0f0,stroke:#888,color:#444
+```
+
+**The arc:** raw bytes (Sections 1–2) → messages with structure (Sections 3–7) → managed messaging product (Sections 8–11). Each layer's existence is justified by the gap the previous one left open.
+
 ---
 
 ## Section 1 — [[Messaging Fundamentals]] ✅
