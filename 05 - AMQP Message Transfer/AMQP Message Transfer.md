@@ -14,7 +14,7 @@ Three pieces, each answering one question a real Service Bus engineer hits:
 2. **What happens when my message is bigger than `max-frame-size`?** — multi-frame transfers
 3. **Is the DISPOSITION round-trip optional?** — settlement modes (and how they map to Service Bus's `PeekLock` vs `ReceiveAndDelete`)
 
-A fourth piece — **disposition states** (accepted / rejected / released / modified, which map onto Service Bus's `Complete` / `DeadLetter` / `Abandon`) — is on the way as a separate note.
+A fourth piece — **disposition states** — covers the verdicts that ride inside DISPOSITION frames and how they map directly onto Service Bus's `Complete` / `DeadLetter` / `Abandon` operations.
 
 ## Bridge from Section 4
 
@@ -40,12 +40,11 @@ flowchart TB
     H[Handshake Choreography<br/>OPEN → BEGIN → ATTACH → first FLOW]:::box
     M[Multi-Frame Messages<br/>same delivery-id + 'more' flag]:::box
     S[Settlement Modes<br/>pre-settled / unsettled / two-phase]:::box
-    D[Disposition States<br/>accepted / rejected / released / modified]:::next
+    D[Disposition States<br/>accepted / rejected / released / modified]:::box
 
     H --> M --> S --> D
 
     classDef box fill:#e8f1ff,stroke:#3b6fbd,color:#0a1f44
-    classDef next fill:#fff3d6,stroke:#b07f1f,color:#3a2700
 ```
 
 ## Notes (in order)
@@ -53,7 +52,7 @@ flowchart TB
 - [[Handshake Choreography]] — the 4 frames out + 5 frames back to send the first message; channel 0 = Connection control; mirrored frames = parameter negotiation; setup amortises across thousands of messages
 - [[Multi-Frame Messages]] — `max-frame-size` is a buffer contract; one delivery glued across N frames by stable `delivery-id` + `more=true/false`; partial buffers silently discarded on Connection loss
 - [[Settlement Modes]] — three modes (pre-settled / unsettled / two-phase) on a cost-vs-safety axis; `>99%` of production runs unsettled (= `PeekLock`); Service Bus does exactly-once via broker dedup, not protocol Mode 3
-- Disposition States — *coming in next note*
+- [[Disposition States]] — accepted / rejected / released / modified — the receiver's verdict; maps onto `Complete` / `DeadLetter` / `Abandon`; auto-DLQ at `MaxDeliveryCount`; consumer settlement is fire-and-forget
 
 ## Where this fits
 

@@ -18,8 +18,8 @@ Legend: ✅ done · 🚧 in progress · ⏳ not started
 | 2 | [Transport Fundamentals](./02%20-%20Transport%20Fundamentals/) | ✅ |
 | 3 | [AMQP Fundamentals](./03%20-%20AMQP%20Fundamentals/) | ✅ |
 | 4 | [AMQP Transport Layer](./04%20-%20AMQP%20Transport%20Layer/) | ✅ |
-| 5 | AMQP Message Transfer | 🚧 |
-| 6 | AMQP Message Lifecycle | ⏳ |
+| 5 | [AMQP Message Transfer](./05%20-%20AMQP%20Message%20Transfer/) | ✅ |
+| 6 | AMQP Message Lifecycle | 🚧 |
 | 7 | AMQP Message Structure | ⏳ |
 | 8 | Service Bus Core Concepts | ⏳ |
 | 9 | Service Bus Message Processing | ⏳ |
