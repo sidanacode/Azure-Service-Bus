@@ -56,14 +56,14 @@ Why we need a protocol on top of TCP, and what AMQP adds.
 
 ---
 
-## Section 4 — AMQP Transport Layer ⏳
+## Section 4 — [[AMQP Transport Layer]] ✅
 
 The four layers AMQP uses to multiplex many conversations over one TCP connection.
 
-- Connection — the outer envelope
-- Session — a conversation inside a connection
-- Link — a one-way channel for messages
-- Frames — the unit AMQP actually sends on the wire
+- [[Connection]] — the front door, one per TCP socket; auth, version, heartbeat
+- [[Frames]] — chunks AMQP writes to TCP, channel-tagged for routing
+- [[Session]] — conversation context, the notebook of deliveries
+- [[Link]] — one-way pipe inside a Session; handle, direction, target/source, credits
 
 ---
 
@@ -157,6 +157,6 @@ Running Service Bus at scale.
 
 ## Progress
 
-Sections 1, 2, and 3 complete. Next: Section 4 — AMQP Transport Layer (Connection, Session, Link, Frames).
+Sections 1, 2, 3, and 4 complete. Section 5 (AMQP Message Transfer) is next — how OPEN / BEGIN / ATTACH / TRANSFER actually flow on the wire and how a single message becomes many frames when it exceeds `max-frame-size`.
 
 The foundation goes: **bytes (TCP) → messages (AMQP) → managed messaging (Service Bus).** Don't skip layers — each one explains why the next exists.
