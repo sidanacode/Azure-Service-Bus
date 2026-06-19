@@ -31,35 +31,32 @@ flowchart LR
 
 ## Section flow — the four layers
 
-Three nested layers ride on top of TCP. Frames are the byte units that carry the multiplexing tags.
+Each layer rides on the one above it and adds exactly one new responsibility. The arrow means "*lives inside / is carried by*" — TCP carries Connection, Connection carries Sessions, Session carries Links, and what actually gets written to the wire is a Frame.
 
 ```mermaid
 flowchart TB
-    TCP[(TCP socket<br/>ordered byte stream)]:::tcp
-
-    subgraph CONN[Connection — the front door]
-        direction TB
-        CON_DESC[1 per TCP socket<br/>auth · version · heartbeat · max-frame-size]:::desc
-    end
-
-    subgraph SESS[Session — a meeting room]
-        direction TB
-        SESS_DESC[channel = which Session<br/>notebook of deliveries<br/>own flow-control window<br/>own error scope]:::desc
-    end
-
-    subgraph LNK[Link — a one-way pipe]
-        direction TB
-        LNK_DESC[handle = which Link<br/>direction sender or receiver<br/>fixed target/source queue<br/>own credit pool]:::desc
-    end
-
-    FR[/TRANSFER frame<br/>channel + handle + delivery-id/]:::frame
+    TCP["TCP socket<br/>ordered, lossless byte stream"]:::tcp
+    CONN["Connection<br/>auth · version · heartbeat · max-frame-size"]:::conn
+    SESS["Session<br/>channel · notebook of deliveries · flow window"]:::sess
+    LNK["Link<br/>handle · direction · target/source · credit pool"]:::link
+    FR["Frame on the wire<br/>channel + handle + delivery-id"]:::frame
 
     TCP --> CONN --> SESS --> LNK --> FR
 
-    classDef tcp fill:#d6f5e0,stroke:#2f7a4f
-    classDef desc fill:#fff,stroke:#3b6fbd,color:#0a1f44
-    classDef frame fill:#fff3d6,stroke:#b07f1f
+    classDef tcp fill:#d6f5e0,stroke:#2f7a4f,color:#0d3320
+    classDef conn fill:#e8f1ff,stroke:#3b6fbd,color:#0a1f44
+    classDef sess fill:#fff8e8,stroke:#b07f1f,color:#3a2700
+    classDef link fill:#f0e0ff,stroke:#7a3fb0,color:#2a0d5a
+    classDef frame fill:#fff,stroke:#222,color:#000
 ```
+
+| Layer | Identifier | What it owns |
+|---|---|---|
+| **TCP** | (the socket itself) | ordered, lossless bytes |
+| **Connection** | 1 per socket | auth, version, heartbeat, max-frame-size |
+| **Session** | `channel` (Connection-scoped) | delivery-id space, flow-control window, error scope |
+| **Link** | `handle` (Session-scoped) | direction, target/source, credit pool |
+| **Frame** | `channel + handle + delivery-id` | one performative — TRANSFER, FLOW, ATTACH, etc. |
 
 ## Routing on every TRANSFER frame
 
