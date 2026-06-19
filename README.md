@@ -17,8 +17,8 @@ Legend: ✅ done · 🚧 in progress · ⏳ not started
 | 1 | [Messaging Fundamentals](./01%20-%20Messaging%20Fundamentals/) | ✅ |
 | 2 | [Transport Fundamentals](./02%20-%20Transport%20Fundamentals/) | ✅ |
 | 3 | [AMQP Fundamentals](./03%20-%20AMQP%20Fundamentals/) | ✅ |
-| 4 | AMQP Transport Layer | ⏳ |
-| 5 | AMQP Message Transfer | ⏳ |
+| 4 | [AMQP Transport Layer](./04%20-%20AMQP%20Transport%20Layer/) | ✅ |
+| 5 | AMQP Message Transfer | 🚧 |
 | 6 | AMQP Message Lifecycle | ⏳ |
 | 7 | AMQP Message Structure | ⏳ |
 | 8 | Service Bus Core Concepts | ⏳ |
@@ -26,7 +26,16 @@ Legend: ✅ done · 🚧 in progress · ⏳ not started
 | 10 | Service Bus Advanced | ⏳ |
 | 11 | Service Bus Architecture & Ops | ⏳ |
 
-The [full index](./Index.md) has every note listed in reading order.
+The [full index](./Index.md) has every note listed in reading order, plus a top-level Mermaid flow showing the whole curriculum at a glance.
+
+## Visual aids
+
+Every section MoC has two Mermaid diagrams:
+
+- **Bridge from previous section** — what carried over and which gap forced the next layer
+- **Section flow** — the section's core idea in one picture
+
+These render natively on GitHub and in Obsidian. The curriculum-wide flow lives in [Index.md](./Index.md).
 
 ## Note structure
 
