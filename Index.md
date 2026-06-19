@@ -22,7 +22,7 @@ flowchart TB
     S2[Section 2<br/>Transport Fundamentals<br/>TCP · reliable byte stream]:::done
     S3[Section 3<br/>AMQP Fundamentals<br/>messages on top of bytes]:::done
     S4[Section 4<br/>AMQP Transport Layer<br/>Connection · Session · Link · Frames]:::done
-    S5[Section 5<br/>AMQP Message Transfer<br/>OPEN → BEGIN → ATTACH → TRANSFER]:::next
+    S5[Section 5<br/>AMQP Message Transfer<br/>Handshake · Multi-Frame · Settlement]:::next
     S6[Section 6<br/>Message Lifecycle<br/>settlement · disposition · flow]:::todo
     S7[Section 7<br/>Message Structure<br/>header · properties · body]:::todo
     S8[Section 8<br/>Service Bus Core<br/>Queue · Topic · Subscription · DLQ]:::todo
@@ -92,13 +92,14 @@ The four layers AMQP uses to multiplex many conversations over one TCP connectio
 
 ---
 
-## Section 5 — AMQP Message Transfer ⏳
+## Section 5 — [[AMQP Message Transfer]] 🚧
 
 How a message actually moves from sender to receiver in AMQP.
 
-- OPEN / BEGIN / ATTACH / TRANSFER frames
-- Message vs Frame — one message can be many frames
-- Session Multiplexing — many conversations sharing one TCP connection
+- [[Handshake Choreography]] — OPEN → BEGIN → ATTACH → first FLOW → TRANSFER → DISPOSITION; channel 0 = control; setup amortises
+- [[Multi-Frame Messages]] — `max-frame-size` is a buffer contract, not a size cap; `delivery-id` + `more` flag glue frames into one atomic delivery
+- [[Settlement Modes]] — pre-settled / unsettled / two-phase; Service Bus uses unsettled + broker dedup, not protocol Mode 3
+- Disposition States — accepted / rejected / released / modified (next)
 
 ---
 
@@ -182,6 +183,6 @@ Running Service Bus at scale.
 
 ## Progress
 
-Sections 1, 2, 3, and 4 complete. Section 5 (AMQP Message Transfer) is next — how OPEN / BEGIN / ATTACH / TRANSFER actually flow on the wire and how a single message becomes many frames when it exceeds `max-frame-size`.
+Sections 1–4 complete. Section 5 in progress — Handshake Choreography, Multi-Frame Messages, and Settlement Modes are written; Disposition States is the next note.
 
 The foundation goes: **bytes (TCP) → messages (AMQP) → managed messaging (Service Bus).** Don't skip layers — each one explains why the next exists.
