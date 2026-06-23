@@ -23,8 +23,8 @@ flowchart TB
     S3[Section 3<br/>AMQP Fundamentals<br/>messages on top of bytes]:::done
     S4[Section 4<br/>AMQP Transport Layer<br/>Connection · Session · Link · Frames]:::done
     S5[Section 5<br/>AMQP Message Transfer<br/>Handshake · Multi-Frame · Settlement · Dispositions]:::done
-    S6[Section 6<br/>Message Lifecycle<br/>settlement · disposition · flow]:::next
-    S7[Section 7<br/>Message Structure<br/>header · properties · body]:::todo
+    S6[Section 6<br/>Message Lifecycle<br/>Lock · Renewal · Flow Control]:::done
+    S7[Section 7<br/>Message Structure<br/>header · properties · body]:::done
     S8[Section 8<br/>Service Bus Core<br/>Queue · Topic · Subscription · DLQ]:::todo
     S9[Section 9<br/>SB Message Processing<br/>peek-lock · complete · abandon]:::todo
     S10[Section 10<br/>SB Advanced<br/>sessions · dedup · scheduled · prefetch]:::todo
@@ -33,6 +33,7 @@ flowchart TB
     S1 --> S2 --> S3 --> S4 --> S5 --> S6 --> S7 --> S8 --> S9 --> S10 --> S11
 
     classDef done fill:#d6f5e0,stroke:#2f7a4f,color:#0d3320
+    classDef wip fill:#fff3d6,stroke:#b07f1f,color:#3a2700
     classDef next fill:#fff3d6,stroke:#b07f1f,color:#3a2700
     classDef todo fill:#f0f0f0,stroke:#888,color:#444
 ```
@@ -85,6 +86,7 @@ Why we need a protocol on top of TCP, and what AMQP adds.
 
 The four layers AMQP uses to multiplex many conversations over one TCP connection.
 
+- [[AMQP Protocol Header]] — the 8-byte greeting (`AMQP\x00\x01\x00\x00`) that engages framing before any frame is sent
 - [[Connection]] — the front door, one per TCP socket; auth, version, heartbeat
 - [[Frames]] — chunks AMQP writes to TCP, channel-tagged for routing
 - [[Session]] — conversation context, the notebook of deliveries
@@ -103,29 +105,27 @@ How a message actually moves from sender to receiver in AMQP.
 
 ---
 
-## Section 6 — AMQP Message Lifecycle ⏳
+## Section 6 — [[AMQP Message Lifecycle]] ✅
 
-What happens between *"sent"* and *"safely delivered"*.
+What protects a message between *"broker delivered it"* and *"consumer settles it"* — the time-bounded contract the consumer has to honor.
 
-- Settlement — when a message is officially "done"
-- Disposition — the receiver's verdict on a message
-- Delivery States — accepted, rejected, released, modified
-- Flow Control — how the receiver tells the sender to slow down
-- Credits — the unit of "I can handle this many more"
-- Backpressure — what happens when the receiver can't keep up
+- [[Lock as Server-Side Timer]] — bounded server-side timer; two clocks racing (lock-duration expiry + heartbeat failure); broker-side state survives reconnects; lock token = generation counter
+- [[Lock Duration and Renewal]] — `LockDuration` is set on the queue (default 30s, max 5min); renewal = heartbeat the broker observes in real time; sync-blocking handlers silently starve auto-renewal; smoking-gun debugging pattern
+- [[Flow Control and Credits]] — FLOW frame as the 9th verb; receiver-controlled valve (same shape as TCP receive window); drain mode; threshold-based refill; backpressure for free
 
 ---
 
-## Section 7 — AMQP Message Structure ⏳
+## Section 7 — [[AMQP Message Structure]] ✅
 
-The shape of an AMQP message itself — the fields and sections.
+The shape of an AMQP message itself — six sections, each owned by a different actor (producer / broker / consumer). Closed-list sections (Header, Properties) for interoperability; open-dict sections (Annotations, Application Properties) for extensibility.
 
-- Header — delivery info (priority, TTL)
-- Properties — addressing (to, from, message-id, correlation-id)
-- Application Properties — your custom metadata
-- Message Annotations — broker metadata
-- Body — the payload
-- Footer — checksums and signatures
+- [[Header]] — broker's must-read section; 5 fixed fields (durable, priority, ttl, first-acquirer, delivery-count); standardised hot-path delivery controls
+- [[Properties]] — addressing fields; ~13 standard slots; message-id, correlation-id, subject, reply-to, group-id (= Service Bus SessionId)
+- [[Application Properties]] — your custom dict; broker reads it for topic filters; where tenant_id, region, customer_tier live
+- [[Message Annotations]] — broker's open dict; vendor extensions under `x-opt-`; where SequenceNumber, EnqueuedTimeUtc, LockedUntil, ScheduledEnqueueTime, PartitionKey live
+- [[Body]] — the payload; three shapes (`data` / `amqp-value` / `amqp-sequence`); Service Bus uses `data`
+- [[Footer]] — open dict at the tail; checksums/signatures over the body; Service Bus doesn't use it (TLS covers integrity)
+- [[Wire Walkthrough]] — synthesis note: trace a single message from `send_messages` through SDK → frame → TCP → broker decode → fsync → DISPOSITION; explains length-prefix framing at three nested levels
 
 ---
 
@@ -183,6 +183,8 @@ Running Service Bus at scale.
 
 ## Progress
 
-Sections 1–5 complete. Section 6 (AMQP Message Lifecycle) is next — the lock/timeout/redeliver dance you actually write code against in Service Bus.
+Sections 1–7 complete. The full AMQP foundation is now in place — TCP bytes → multiplexed frames → conversation contexts (Sessions/Links) → message transfer → lifecycle protection → message structure. The [[Wire Walkthrough]] note synthesises Sections 4–7 by tracing one message end-to-end through every layer.
+
+Next: Section 8 (Service Bus Core) — Queue, Topic, Subscription, DLQ. We leave AMQP and enter Service Bus's product layer.
 
 The foundation goes: **bytes (TCP) → messages (AMQP) → managed messaging (Service Bus).** Don't skip layers — each one explains why the next exists.

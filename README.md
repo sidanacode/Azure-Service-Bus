@@ -19,9 +19,9 @@ Legend: ✅ done · 🚧 in progress · ⏳ not started
 | 3 | [AMQP Fundamentals](./03%20-%20AMQP%20Fundamentals/) | ✅ |
 | 4 | [AMQP Transport Layer](./04%20-%20AMQP%20Transport%20Layer/) | ✅ |
 | 5 | [AMQP Message Transfer](./05%20-%20AMQP%20Message%20Transfer/) | ✅ |
-| 6 | AMQP Message Lifecycle | 🚧 |
-| 7 | AMQP Message Structure | ⏳ |
-| 8 | Service Bus Core Concepts | ⏳ |
+| 6 | [AMQP Message Lifecycle](./06%20-%20AMQP%20Message%20Lifecycle/) | ✅ |
+| 7 | [AMQP Message Structure](./07%20-%20AMQP%20Message%20Structure/) | ✅ |
+| 8 | Service Bus Core Concepts | 🚧 |
 | 9 | Service Bus Message Processing | ⏳ |
 | 10 | Service Bus Advanced | ⏳ |
 | 11 | Service Bus Architecture & Ops | ⏳ |
@@ -36,6 +36,8 @@ Every section MoC has two Mermaid diagrams:
 - **Section flow** — the section's core idea in one picture
 
 These render natively on GitHub and in Obsidian. The curriculum-wide flow lives in [Index.md](./Index.md).
+
+Section 7 also includes a [Wire Walkthrough](./07%20-%20AMQP%20Message%20Structure/Wire%20Walkthrough.md) — a synthesis note that traces a single message end-to-end through SDK → frame → TCP → broker → fsync → DISPOSITION, with length-prefix framing explained at three nested levels.
 
 ## Note structure
 
