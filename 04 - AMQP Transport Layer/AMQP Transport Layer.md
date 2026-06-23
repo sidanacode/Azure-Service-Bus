@@ -140,6 +140,7 @@ Header is always the same shape (size, DOFF, type, channel). The body's performa
 
 ## Notes (in order)
 
+- [[AMQP Protocol Header]] — the 8-byte greeting that engages framing before any frame is sent
 - [[Connection]] — the front door: one per TCP socket, owns auth/version/heartbeat
 - [[Frames]] — what AMQP actually writes to TCP, channel-tagged for routing
 - [[Session]] — a conversation context, the notebook of deliveries

@@ -3,7 +3,7 @@ tags:
   - amqp
   - transport
 ---
-
+no
 # Link
 
 > **A Link is a one-way pipe inside a [[Session]] that carries messages between the producer/consumer and a single queue or topic.** Every Link has a fixed direction (sender or receiver), a fixed address (target or source), its own credit pool for flow control, and a Session-scoped tag called a **handle** that routes frames to the right pipe. Sessions stamp and track frames; Links direct them.
